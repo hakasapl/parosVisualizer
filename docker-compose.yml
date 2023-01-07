@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  influxdb:
+    hostname: paros-influxdb
+    container_name: paros-influxdb
+    image: influxdb:2.5.1
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-storage:/var/lib/influxdb2
+      - ./influxdb/config.yml:/etc/influxdb2/config.yml
+  grafana:
+    hostname: paros-grafana
+    container_name: paros-grafana
+    image: grafana/grafana-oss
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+volumes:
+  influxdb-storage:
+  grafana-storage:
+networks:
+  default:
+    name: paros-visualization-net
