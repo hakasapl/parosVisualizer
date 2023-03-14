@@ -16,7 +16,6 @@ def main():
     time_delta = 10  # In minutes, set equivalent to cron job
     bucket_prefix = "paros-"
 
-    influxdb_value_col = "value"
     influxdb_sensorid_tagkey = "sensor_id"
 
     influxdb_apikey = ""
@@ -121,8 +120,7 @@ def main():
 
                     idb_query = 'from(bucket:"' + input_bucket_name + '")'\
                         '|> ' + idb_range_str + ''\
-                        '|> filter(fn: (r) => r["_measurement"] == "' + measurement + '")'\
-                        '|> filter(fn: (r) => r["_field"] == "' + influxdb_value_col + '")'
+                        '|> filter(fn: (r) => r["_measurement"] == "' + measurement + '")'
 
                     for device in device_list:
                         # query for that device only
@@ -132,9 +130,9 @@ def main():
 
                         cur_result = influxdb_query_api.query(org=influxdb_org, query=cur_query)
 
-                        data = [{"timestamp": record.get_time(), "value": record.get_value()} for table in cur_result for record in table.records]
+                        data = [{"timestamp": record.get_time(), "field": record.get_field(), "value": record.get_value()} for table in cur_result for record in table.records]
                         df = pd.DataFrame(data)
-                        df.set_index("timestamp", inplace=True)
+                        df = df.pivot(index="timestamp", columns="field", values="value")
 
                         # run module
                         print("...Done")
