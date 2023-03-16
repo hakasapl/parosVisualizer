@@ -12,14 +12,16 @@ Where `<order>` is the order to be run relative to the other modules. For exampl
 
 In each script you need to have one `main` method, which accepts 1 argument. **The naming of the argument matters!**
 
-The argument should be named according to the data you are looking for. For example, if the input data you want is the raw data, the argument should be `datastream`, because that is the name of the bucket for raw data in influxdb. The main method should return the output data in a list of lists format:
+The argument should be named according to the data you are looking for. For example, if the input data you want is the raw data, the argument should be `datastream`, because that is the name of the bucket for raw data in influxdb. The main method should return a pandas dataframe like this:
 
 ```
-[
-    ["timestamp in ISO + Z", "value1", "value2", ..., "valueN"],
-    ["timestamp in ISO + Z", "value1", "value2", ..., "valueN"],
-    ...
-]
+field                              value           value1... etc.
+timestamp                                                                          
+2023-02-10 00:00:00+00:00          1006.705103
+2023-02-10 00:00:00.050000+00:00   1006.704059
+2023-02-10 00:00:00.100000+00:00   1006.704521
+2023-02-10 00:00:00.150000+00:00   1006.704753
+2023-02-10 00:00:00.200000+00:00   1006.704317
 ```
 
 Do not include the sensor ID in the output data, the method will be fed each sensor individually.

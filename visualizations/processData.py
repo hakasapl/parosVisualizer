@@ -84,6 +84,8 @@ def main():
                 print(f"Input data: {input_bucket_name}")
                 print(f"Output data: {output_bucket_name}")
 
+                # ! TODO check if buckets exist
+
                 # get input data from influxdb
                 # 1. get each measurement in bucket (each measurement is a box)
                 idb_measurement_query = \
@@ -138,8 +140,10 @@ def main():
                         print("...Done")
                         print(f"Running module {module_name_trimmed} on sensor {device}")
                         output = module.main(df)
+                        
+                        output[influxdb_sensorid_tagkey] = device
 
-                        # TODO write output
+                        influxdb_write_api.write(output_bucket_name, influxdb_org, record=output, data_frame_measurement_name=measurement, data_frame_tag_columns=[influxdb_sensorid_tagkey], utc=True)
 
 if __name__ == "__main__":
     main()
