@@ -4,23 +4,26 @@ services:
     hostname: paros-influxdb
     container_name: paros-influxdb
     image: influxdb:2.5.1
-    ports:
-      - "8086:8086"
+    network_mode: "host"
+    environment:
+      - INFLUXD_STORAGE_CACHE_MAX_MEMORY_SIZE=2000000000
     volumes:
-      - influxdb-storage:/var/lib/influxdb2
-      - ./influxdb/config.yml:/etc/influxdb2/config.yml
+      - /mnt/paros-influxdb-data:/var/lib/influxdb2
   grafana:
     hostname: paros-grafana
     container_name: paros-grafana
     image: grafana/grafana-oss
-    ports:
-      - "3000:3000"
+    network_mode: "host"
+    environment:
+      - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
     volumes:
-      - grafana-storage:/var/lib/grafana
+      - /mnt/paros-grafana-data:/var/lib/grafana
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-volumes:
-  influxdb-storage:
-  grafana-storage:
-networks:
-  default:
-    name: paros-visualization-net
+  prometheus:
+    hostname: paros-prometheus
+    image: prom/prometheus
+    network_mode: "host"
+    user: 1002:1002
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - /mnt/paros-prometheus-data:/prometheus
